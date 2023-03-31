@@ -4,34 +4,45 @@ using UnityEngine;
 
 public class ProjectileDestroy : MonoBehaviour
 {
-	public  float    _HeightLimit;
-	private Vector3  _InitialPosition;
+    // Límite de altura antes de que el proyectil sea destruido
+    public float _HeightLimit;
 
-	private Score    _Score;
-	private MatchMng _MatchMng;
+    // Posición inicial del proyectil
+    private Vector3 _InitialPosition;
 
-	void Start()
-	{
-        _Score    = GameObject.Find("Mng").GetComponent<Score>();
-        _MatchMng = GameObject.Find("Mng").GetComponent<MatchMng>();
-		
-		_InitialPosition = gameObject.GetComponent<Transform>().position;
-	}
+    // Referencias a otros scripts
+    private Score _Score;
+    private MatchMng _MatchMng;
 
-	void Update()
-	{
-		float actualHeight = gameObject.GetComponent<Transform>().position.y; 
-		if (actualHeight <= _HeightLimit) {
-			gameObject.GetComponent<Transform>().position = _InitialPosition;
-			_MatchMng.shoot = false;
-		}
-	}
+    void Start()
+    {
+      // Obtiene referencias a otros scripts
+      _Score = GameObject.Find("Mng").GetComponent<Score>();
+      _MatchMng = GameObject.Find("Mng").GetComponent<MatchMng>();
 
-	// Bullseye hit
-	void OnCollisionEnter(Collision collision)
-	{
-		_MatchMng.shotEnded = true;
-		_Score.AddScore();
-		Destroy(gameObject);
-	}
+      // Obtiene la posición inicial del proyectil
+      _InitialPosition = gameObject.GetComponent<Transform>().position;
+    }
+
+    void Update()
+    {
+      // Comprueba si la altura actual del proyectil es menor o igual al límite de altura
+      float actualHeight = gameObject.GetComponent<Transform>().position.y;
+      if (actualHeight <= _HeightLimit)
+      {
+        // Si es así, devuelve el proyectil a su posición inicial y establece que no se ha realizado ningún disparo
+        gameObject.GetComponent<Transform>().position = _InitialPosition;
+        _MatchMng.shoot = false;
+      }
+    }
+
+  // Cuando el proyectil colisiona con el Bullseye
+  void OnCollisionEnter(Collision collision)
+  {
+    // Establece que el disparo ha terminado, suma la puntuación y destruye el proyectil
+    _MatchMng.shotEnded = true;
+    _Score.AddScore();
+    Destroy(gameObject);
+  }
 }
+
