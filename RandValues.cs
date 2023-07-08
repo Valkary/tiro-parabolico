@@ -39,6 +39,8 @@ public class RandValues: MonoBehaviour
   public float uprPrjMass = 3.0f;
   public float rPrjMass;
 
+  public Vector3 blockedCoords;
+
   // Distancia (basada en T)
   public float rDist;
 
@@ -68,6 +70,7 @@ public class RandValues: MonoBehaviour
 
     // Retorna los valores aleatorios en un array
     float[] initialVal = new float[7] {rK, rT, rGrvt, rPlatHgt, rTrgrHgt, rPrjMass, rDist};
+    
     return initialVal;
   }
 
@@ -85,6 +88,41 @@ public class RandValues: MonoBehaviour
     Debug.Log("Distancia = " + rDist);
 
     float[] initialVal = new float[7] { rK, rT, rGrvt, rPlatHgt, rTrgrHgt, rPrjMass, rDist };
+    blockedCoords = CalculateBlockedCoordinate(rGrvt, rK, 8.0f, 0.0f);
     return initialVal;
+  }
+
+  void Start() {
+    CalculateBlockedCoordinate();
+  }
+
+  public Vector3 CalculateBlockedCoordinate(float g, float k, float platform_x, float platform_y, float target_x, float target_y) {
+    float v, theta, root, blocked_y, blocked_x, x, y;
+
+    // Calcular la distancia entre las coordenadas
+    x = target_x - platform_x;
+    y = target_y - platform_y;
+
+    // TODO: Calcular la velocidad (luego)
+    v = 10.0f;
+
+    // Calcular la raiz
+    root = Mathf.Sqrt(Mathf.Pow(v, 4) - g * (g * Mathf.Pow(x, 2) + 2 * y * Mathf.Pow(v, 2)));
+
+    // Calcular el angulo menor
+    theta = Mathf.Atan((Mathf.Pow(v, 2) - root) / (g * x));
+
+    // Checar si el angulo es valido
+    if (theta > (Mathf.PI/2) || theta < 0 || theta == float.NaN) {
+        return new Vector3(-1, -1, 0);
+    }
+
+    // Calcular el punto mas alto de la parabola
+    blocked_y = (Mathf.Pow(v,2) * Mathf.Pow(Mathf.Sin(theta),2)) / (2 * g);
+
+    // TODO: Calcular el valor de x en el punto mas alto de la parabola
+    blocked_x = 0.0f;
+
+    return new Vector3(blocked_x, blocked_y, 0);
   }
 }
